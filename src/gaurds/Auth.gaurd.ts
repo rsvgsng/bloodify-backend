@@ -15,9 +15,10 @@ export class AuthGuard implements CanActivate {
         if (!token) return false
         try {
             let isVerified = jwt.verify(token, JWT_KEY)
+            request.id = isVerified['id']
+            request.userName = isVerified['userName']
 
-            console.log(isVerified)
-            return true
+            if (isVerified) return true
         } catch (error) {
             return false
         }

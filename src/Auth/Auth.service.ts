@@ -53,10 +53,7 @@ export class AuthService {
             const userPassword = userData[0].password
             const isPasswordValid = await bcrypt.compare(user.password, userPassword)
             if (!isPasswordValid) throw new BadRequestException("Invalid username or password")
-            const token = jwt.sign({ id: userData[0].id, userName: userData[0].userName }, JWT_KEY)
-
-
-
+            const token = jwt.sign({ id: userData[0].userID, userName: userData[0].userName }, JWT_KEY)
             return new SuccessResponse(token, "User login successful")
         } catch (error) {
             throw error

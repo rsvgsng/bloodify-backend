@@ -77,4 +77,5 @@ export const districtsOfNepal = [
     { name: "Udayapur" }
 ];
 
+
 export const JWT_KEY = "ndajkshd78gq3dubjhasamcaasdniggaballassdq9d9udq8wdquhsanvbansdvbnasd"
