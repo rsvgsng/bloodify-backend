@@ -2,4 +2,4 @@
 
 Bloodify's backend is developed using TypeScript with the NestJS framework and utilizes MySQL. This project was assigned during our 4th semester and focuses on creating a blood bank system that includes features such as donation searching, events, and more.
 
-Disclaimer :  This project should not be used in real world since there might be some security issues with it. 
+Disclaimer: This project was created to demonstrate the potential of MySQL and NestJS for my semester project within a short timeframe. Therefore, it should not be used in a real-world scenario, as there may be some security issues present.
