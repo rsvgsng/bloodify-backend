@@ -32,8 +32,25 @@ export class MainController {
     @UseGuards(AuthGuard)
     @Put("SearchBlood")
     public async SearchBlood(
-        @Body() sb: SearchBloodDTO
+        @Body() sb: SearchBloodDTO,
+        @Req() req: reqDTO
     ) {
-        return this.mainService.SearchBlood(sb)
+        return this.mainService.SearchBlood(sb, req)
+    }
+
+    @UseGuards(AuthGuard)
+    @Put("SearchAmbulance")
+    public async SearchAmbulance(
+        @Body() sa: { district: string }
+    ) {
+        return this.mainService.SearchAmbulance(sa)
+    }
+
+    @UseGuards(AuthGuard)
+    @Put("SearchBloodBank")
+    public async SearchBloodBank(
+        @Body() sbb: { district: string }
+    ) {
+        return this.mainService.SearchBloodBank(sbb)
     }
 }

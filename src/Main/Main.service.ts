@@ -19,6 +19,12 @@ export class MainService {
             if (!rb.patientName || !rb.bloodGroup || !rb.District || !rb.Hospital || !rb.contactNumber || !rb.details) {
                 throw new BadRequestException("Please provide all the required fields")
             }
+            if (rb.details.length < 5) throw new BadRequestException("Details must be at least 5 characters long")
+            if (rb.details.length > 500) throw new BadRequestException("Details must be at most 500 characters long")
+
+            if (rb.patientName.length < 3) throw new BadRequestException("Patient name must be at least 3 characters long")
+            if (rb.patientName.length > 100) throw new BadRequestException("Patient name must be at most 100 characters long")
+
             await this.mysqlService.execute(`
             INSERT INTO bloodRequests (patientName, bloodGroup, District, Hospital, contactNumber, details, reqestedUser,requestedDate)
             VALUES (?, ?, ?, ?, ?, ?, ?,?)
@@ -49,7 +55,8 @@ export class MainService {
     }
 
     async SearchBlood(
-        sb: SearchBloodDTO
+        sb: SearchBloodDTO,
+        req: reqDTO
     ): Promise<SuccessResponse | BadRequestException> {
         try {
             if (!sb.bloodType || !sb.district) {
@@ -59,8 +66,8 @@ export class MainService {
             const requests = await this.mysqlService.execute(`
             SELECT fullName, phone,bloodType, district, fullAddress
             FROM users
-            WHERE bloodType = ? AND district = ?
-            `, [sb.bloodType, sb.district])
+            WHERE bloodType = ? AND district = ? AND userName !=  ?
+            `, [sb.bloodType, sb.district, req.userName])
 
             if (requests.length === 0) throw new BadRequestException("No donors found")
             return new SuccessResponse(requests, "Donors fetched successfully")
@@ -69,6 +76,43 @@ export class MainService {
         }
     }
 
+    async SearchAmbulance(
+        sa: { district: string }
+    ): Promise<SuccessResponse | BadRequestException> {
+        try {
+            if (!sa.district) {
+                throw new BadRequestException("Please provide all the required fields")
+            }
+            let a = await this.mysqlService.execute(`
+            SELECT * from ambulances
+            WHERE ambulanceDistrict = ?
+            `, [sa.district])
+            if (a.length === 0) throw new BadRequestException("No ambulances found")
+            return new SuccessResponse(a, "Ambulances fetched successfully")
+
+        } catch (error) {
+            throw error
+        }
+    }
+
+    async SearchBloodBank(
+        sbb: { district: string }
+    ): Promise<SuccessResponse | BadRequestException> {
+        try {
+            if (!sbb.district) {
+                throw new BadRequestException("Please provide all the required fields")
+            }
+            let a = await this.mysqlService.execute(`
+            SELECT * from bloodbank
+            WHERE bankDistrict = ?
+            `, [sbb.district])
+            if (a.length === 0) throw new BadRequestException("No blood banks found")
+            return new SuccessResponse(a, "Blood banks fetched successfully")
+
+        } catch (error) {
+            throw error
+        }
+    }
 
 
 }
