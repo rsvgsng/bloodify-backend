@@ -1,9 +1,10 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, Req } from "@nestjs/common";
 import { CreateUserDTO, LoginDTO, SuccessResponse } from "./dto/Auth.dto";
 import { MysqlPoolService } from "src/Utils/mysq.service";
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { JWT_KEY } from "src/Utils/Contants";
+import { reqDTO } from "src/Main/dto/Main.dto";
 @Injectable()
 export class AuthService {
     constructor(
@@ -56,8 +57,32 @@ export class AuthService {
             const userPassword = userData[0].password
             const isPasswordValid = await bcrypt.compare(user.password, userPassword)
             if (!isPasswordValid) throw new BadRequestException("Invalid username or password")
-            const token = jwt.sign({ id: userData[0].userID, userName: userData[0].userName }, JWT_KEY)
+            const token = jwt.sign({ id: userData[0].userID, userName: userData[0].userName, role: userData[0].role }, JWT_KEY)
             return new SuccessResponse(token, "User login successful")
+        } catch (error) {
+            throw error
+        }
+    }
+
+
+    public async Ping(
+        @Req() req: reqDTO
+    ): Promise<{ role: string, serverTime: Date, userName: string } | BadRequestException> {
+        try {
+            let data = await this.mysqlService.execute(`
+                SELECT * FROM users WHERE userID = ?
+                `, [req.id]
+            ).catch((error) => {
+                throw error
+            })
+            if (data.length === 0) throw new BadRequestException("User not found")
+            let role = data[0].role
+            await new Promise((resolve) => setTimeout(resolve, 1500))
+            return ({
+                role: role,
+                serverTime: new Date(),
+                userName: data[0].userName
+            })
         } catch (error) {
             throw error
         }

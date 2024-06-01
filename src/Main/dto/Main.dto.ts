@@ -16,6 +16,7 @@ export interface SearchBloodDTO {
 
 export interface reqDTO {
     id,
-    userName
+    userName,
+    role
 
 }
