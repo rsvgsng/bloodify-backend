@@ -34,4 +34,18 @@ export class MysqlPoolService {
             connection.release();
         }
     }
+
+    async query(query: string, params: any[] = []): Promise<any> {
+        const connection = await this.pool.query();
+        try {
+            const [results] = await connection.query(query, params);
+            return results;
+        } finally {
+            connection.release();
+        }
+    }
+
+    async poolD() {
+        return this.pool;
+    }
 }

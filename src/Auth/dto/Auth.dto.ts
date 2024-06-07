@@ -42,3 +42,29 @@ export interface AddBulkBloodDTO {
     District: string;
 }[]
 
+
+export interface AddCampaignDTO {
+    campaignID: string;
+    campaignName: string;
+    campaignStartDate: string;
+    campaignEndDate: string;
+    campaignOrganizer: string;
+    description: string;
+    isFinished: boolean;
+    doners?: [{
+        donerID: string;
+        donerFullName: string;
+        donerLocation: string;
+        donerContact: string;
+        donerCampaignID: string;
+    }]
+}
+
+
+export interface AddAmbulanceDTO {
+    ambulanceProvider: string;
+    ambulanceLocation: string;
+    ambulanceContact: string;
+    ambulanceDistrict: string;
+}
+
