@@ -6,4 +6,4 @@ Bloodify's backend is developed using TypeScript with the NestJS framework and u
 
 **Disclaimer:** This project was created to demonstrate the potential of MySQL and NestJS for my semester project within a short timeframe. Therefore, it should not be used in a real-world scenario, as there may be some security issues present.
 
-For the SQL file, you can download it from [here](https://raw.githubusercontent.com/rsvgsng/bloodify-backend/main/bloodify.sql) (outdated).
+For the SQL file, you can download it from [here](https://raw.githubusercontent.com/rsvgsng/bloodify-backend/main/bloodify_2024-06-07.sql) (updated 7 june).
