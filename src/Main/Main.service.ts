@@ -114,5 +114,40 @@ export class MainService {
         }
     }
 
+    async getCampaigns(): Promise<SuccessResponse | BadRequestException> {
+        try {
+            let a = await this.mysqlService.execute(`
+            SELECT
+            c.campaignID,
+            c.campaignName,
+            c.campaignStartDate,
+            c.campaignEndDate,
+            c.campaignOrganizer,
+            c.description,
+            c.isFinished,
+            CASE
+                WHEN COUNT(d.donerID) = 0 THEN NULL
+                ELSE JSON_ARRAYAGG(JSON_OBJECT(
+                    'donerID', d.donerID,
+                    'donerFullName', d.donerFullName,
+                    'donerLocation', d.donerLocation,
+                    'donerContact', d.donerContact
+                ))
+            END AS doners
+        FROM
+            campaigns c
+        LEFT JOIN
+            campaignDoners d ON c.campaignID = d.donerCampaignID
+        GROUP BY
+            c.campaignID;
+            `)
+            if (a.length === 0) throw new BadRequestException("No campaigns found")
+            return new SuccessResponse(a, "Campaigns fetched successfully")
+
+        } catch (error) {
+            throw error
+        }
+    }
+
 
 }

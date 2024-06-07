@@ -53,4 +53,13 @@ export class MainController {
     ) {
         return this.mainService.SearchBloodBank(sbb)
     }
+
+
+    @UseGuards(AuthGuard)
+    @Get("getCampaigns")
+    public async getCampaigns(
+
+    ) {
+        return this.mainService.getCampaigns()
+    }
 }
