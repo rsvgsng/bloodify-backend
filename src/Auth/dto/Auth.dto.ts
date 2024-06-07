@@ -26,3 +26,19 @@ export interface CreateUserDTO {
     bloodType: string;
     password: string;
 }
+
+
+export interface AddBloodBankDTO {
+    BankName: string;
+    Location: string;
+    Contact: string;
+    District: string;
+}
+
+export interface AddBulkBloodDTO {
+    BankName: string;
+    Location: string;
+    Contact: string;
+    District: string;
+}[]
+

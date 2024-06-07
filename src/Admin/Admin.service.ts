@@ -1,5 +1,5 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
-import { SuccessResponse } from "src/Auth/dto/Auth.dto";
+import { BadRequestException, HttpException, Injectable } from "@nestjs/common";
+import { AddBloodBankDTO, AddBulkBloodDTO, SuccessResponse } from "src/Auth/dto/Auth.dto";
 import { MysqlPoolService } from "src/Utils/mysq.service";
 
 @Injectable()
@@ -118,6 +118,54 @@ export class AdminService {
             return new SuccessResponse(a)
         } catch (error) {
 
+        }
+    }
+
+    async addBloodBank(
+        dto: AddBloodBankDTO,
+        mode: "single" | "bulk",
+        bulkdto: AddBulkBloodDTO[]
+    ): Promise<SuccessResponse | BadRequestException> {
+        try {
+            if (mode === 'single') {
+                if (!dto.BankName || !dto.Contact || !dto.District || !dto.Location) throw new BadRequestException("Invalid data")
+                if (dto.Contact.length < 10 || dto.Contact.length > 10
+
+                ) throw new BadRequestException("Invalid contact number")
+
+                let a = await this.mysqlService.execute(`
+                INSERT INTO bloodbank (bankName, bankLoaction, bankContact, bankDistrict) VALUES (?,?,?,?)
+                `, [dto.BankName, dto.Location, dto.Contact, dto.District])
+                if (a.affectedRows == 0) throw new BadRequestException("Failed to add blood bank")
+                return new SuccessResponse("Blood bank added successfully")
+            }
+
+            if (mode === "bulk") {
+                if (bulkdto.length == 0) throw new BadRequestException("Invalid data");
+
+                bulkdto?.map(e => {
+                    if (!e.BankName || !e.Contact || !e.District || !e.Location) throw new BadRequestException("Invalid data")
+                    if (e.Contact.length < 10) throw new BadRequestException("Invalid contact number")
+                })
+
+                let successinserts = 0;
+                let failedinserts = 0;
+                for (let i = 0; i < bulkdto.length; i++) {
+                    let e = bulkdto[i];
+                    let a = await this.mysqlService.execute(`
+                    INSERT INTO bloodbank (bankName, bankLoaction, bankContact, bankDistrict) VALUES (?,?,?,?)
+                    `, [e.BankName, e.Location, e.Contact, e.District])
+                    if (a.affectedRows == 0) failedinserts++
+                    else successinserts++
+                }
+
+                return new SuccessResponse(`Bulk insert completed, ${successinserts} successfull, ${failedinserts} failed`)
+            }
+
+            throw new BadRequestException("Invalid mode")
+        } catch (error) {
+            if (error.code == "ER_DUP_ENTRY") throw new BadRequestException("Some data already exists in the database")
+            throw error
         }
     }
 
