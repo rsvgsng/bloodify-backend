@@ -20,4 +20,26 @@ export class AdminController {
     }
 
 
+    @UseGuards(AdminGaurd)
+    @Get("GetAllUsers")
+    async getUsers() {
+        return this.adminService.getAllUsers()
+    }
+
+
+    @UseGuards(AdminGaurd)
+    @Get("GetAllRequests")
+    async getAllRequest() {
+        return this.adminService.getBloodRequest()
+    }
+
+
+    @UseGuards(AdminGaurd)
+    @Get("GetAllBloodBanks")
+    async getAllBloodBanks() {
+        return this.adminService.getBloodBanks()
+    }
+
+
+
 }

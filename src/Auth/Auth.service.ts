@@ -75,9 +75,10 @@ export class AuthService {
             ).catch((error) => {
                 throw error
             })
+
             if (data.length === 0) throw new BadRequestException("User not found")
             let role = data[0].role
-            await new Promise((resolve) => setTimeout(resolve, 1500))
+            await new Promise((resolve) => setTimeout(resolve, 100))
             return ({
                 role: role,
                 serverTime: new Date(),
@@ -87,4 +88,10 @@ export class AuthService {
             throw error
         }
     }
+
+
+
 }
+
+
+

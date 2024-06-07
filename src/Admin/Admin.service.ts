@@ -13,8 +13,6 @@ export class AdminService {
     async dashboard()
         : Promise<SuccessResponse | BadRequestException> {
         try {
-            // count 3 tables  and return the count
-
             let recentBloodRequestscount = await this.mysqlService.execute(
                 `
                 SELECT 
@@ -25,8 +23,6 @@ export class AdminService {
                     (SELECT COUNT(*) FROM users) AS users_count;
                 `,
                 ['false']
-
-
 
             ).catch(err => {
                 throw new BadRequestException(err);
@@ -61,5 +57,69 @@ export class AdminService {
             throw error
         }
     }
+
+
+    async getAllUsers(): Promise<SuccessResponse | BadRequestException> {
+        try {
+
+            let a = await this.mysqlService.execute(`
+            SELECT userID, userName, fullName, phone, district, fullAddress, bloodType, role, joinedOn 
+            FROM users
+            ORDER BY joinedOn DESC
+
+            `)
+
+            if (a.length == 0) return new SuccessResponse([], "No data");
+
+            return new SuccessResponse(a, "Data fetched !")
+
+        } catch (error) {
+            throw error
+        }
+    }
+
+
+
+    async getBloodRequest(): Promise<SuccessResponse | BadRequestException> {
+        try {
+
+            let a: [] = await this.mysqlService.execute(`
+            SELECT bloodRequests.*, users.userName
+            FROM bloodRequests
+            JOIN users ON bloodRequests.reqestedUser = users.userID
+            ORDER BY bloodRequests.requestedDate DESC
+            `)
+
+            if (a.length == 0) return new SuccessResponse([]);
+
+            let arr = a.map((e: any) => {
+                let requestedDate = new Date(e.requestedDate);
+                let isExpired = requestedDate < new Date();
+                return {
+                    ...e,
+                    isExpired: isExpired
+                };
+            });
+
+            return new SuccessResponse(arr)
+        } catch (error) {
+
+        }
+    }
+
+
+    async getBloodBanks(): Promise<SuccessResponse | BadRequestException> {
+        try {
+
+            let a = await this.mysqlService.execute(`
+            SELECT * FROM bloodbank
+            `)
+
+            return new SuccessResponse(a)
+        } catch (error) {
+
+        }
+    }
+
 
 }
